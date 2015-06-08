@@ -121,7 +121,7 @@ if($this->ion_auth->logged_in()) {
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $this->ion_auth->user()->row()->username;?> <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="<?php echo site_url('user/profile');?>">Profile page</a></li>
+                            <li><a href="<?php echo site_url('users/profile');?>">Profile page</a></li>
                             <?php echo $current_user_menu;?>
                             <li class="divider"></li>
                             <li><a href="<?php echo site_url('user/logout');?>">Logout</a></li>

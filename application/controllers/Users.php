@@ -1,13 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Users extends Admin_Controller
+class Users extends MY_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        if(!$this->ion_auth->in_group('admin'))
+        if(!$this->ion_auth->is_admin())
         {
             $this->postal->add('You are not allowed to visit the Users page','error');
             redirect('admin');
@@ -19,7 +19,7 @@ class Users extends Admin_Controller
         $this->data['page_title'] = 'Users';
         //$this->data['users'] = $this->ion_auth->users($group_id)->result();
         $this->data['users'] = $this->ion_auth->users(array(1,'members'))->result();
-        $this->render('admin/users/index_view');
+        $this->render('users/index_view');
 	}
 
     public function create()
@@ -40,7 +40,7 @@ class Users extends Admin_Controller
         {
             $this->data['groups'] = $this->ion_auth->groups()->result();
             $this->load->helper('form');
-            $this->render('admin/users/create_view');
+            $this->render('users/create_view');
         }
         else
         {
@@ -57,7 +57,7 @@ class Users extends Admin_Controller
             );
             $this->ion_auth->register($username, $password, $email, $additional_data, $group_ids);
             $this->postal->add($this->ion_auth->messages(),'success');
-            redirect('admin/users');
+            redirect('users');
         }
     }
 
@@ -67,7 +67,7 @@ class Users extends Admin_Controller
         if($this->data['current_user']->id == $user_id)
         {
             $this->postal->add('Use the profile page to change your own credentials.','error');
-            redirect('admin/users');
+            redirect('users');
         }
         $this->data['page_title'] = 'Edit user';
         $this->load->library('form_validation');
@@ -104,7 +104,7 @@ class Users extends Admin_Controller
                 }
             }
             $this->load->helper('form');
-            $this->render('admin/users/edit_view');
+            $this->render('users/edit_view');
         }
         else
         {
@@ -132,7 +132,44 @@ class Users extends Admin_Controller
                 }
             }
             $this->postal->add($this->ion_auth->messages(),'success');
-            redirect('admin/users');
+            redirect('users');
+        }
+    }
+
+    public function profile()
+    {
+        $this->data['page_title'] = 'User Profile';
+        $user = $this->ion_auth->user()->row();
+        $this->data['user'] = $user;
+        $this->data['current_user_menu'] = '';
+        if($this->ion_auth->in_group('admin'))
+        {
+            $this->data['current_user_menu'] = $this->load->view('templates/_parts/user_menu_admin_view.php', NULL, TRUE);
+        }
+
+        $this->load->library('form_validation');
+        $this->form_validation->set_rules('first_name','First name','trim');
+        $this->form_validation->set_rules('last_name','Last name','trim');
+        $this->form_validation->set_rules('company','Company','trim');
+        $this->form_validation->set_rules('phone','Phone','trim');
+
+        if($this->form_validation->run()===FALSE)
+        {
+            $this->render('users/profile_view');
+        }
+        else
+        {
+            $new_data = array(
+                'first_name' => $this->input->post('first_name'),
+                'last_name'  => $this->input->post('last_name'),
+                'company'    => $this->input->post('company'),
+                'phone'      => $this->input->post('phone')
+            );
+            if(strlen($this->input->post('password'))>=6) $new_data['password'] = $this->input->post('password');
+            $this->ion_auth->update($user->id, $new_data);
+            $this->postal->add($this->ion_auth->messages(),'error');
+            redirect('user/profile');
+
         }
     }
 

@@ -78,7 +78,7 @@
                 ?>
             </div>
             <?php echo form_submit('submit', 'Create user', 'class="btn btn-primary btn-lg btn-block"');?>
-            <?php echo anchor('/admin/users', 'Cancel','class="btn btn-default btn-lg btn-block"');?>
+            <?php echo anchor('users', 'Cancel','class="btn btn-default btn-lg btn-block"');?>
             <?php echo form_close();?>
         </div>
     </div>

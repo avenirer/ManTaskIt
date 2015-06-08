@@ -26,9 +26,10 @@ class MY_Controller extends CI_Controller
         $this->user_id = $current_user->id;
         $this->data['current_user'] = $current_user;
         $this->data['current_user_menu'] = '';
+        if($this->ion_auth->is_admin()) $this->data['current_user_menu'] = $this->load->view('templates/_parts/user_menu_admin_view',NULL, TRUE);
 
         $this->load->model('banned_model');
-        $ips = $this->banned_model->fields('ip')->set_cache('banned_ips',3600)->get_all();
+        $ips = $this->banned_model->get_all();
         $banned_ips = array();
         if(!empty($ips))
         {

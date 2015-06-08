@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ManTaskIt</title>
-    <link href="<?php echo site_url('assets/admin/css/bootstrap.min.css');?>" rel="stylesheet">
+    <link href="<?php echo site_url('assets/css/bootstrap.min.css');?>" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -59,6 +59,5 @@
             <p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
         </div>
     </footer>
-    <script src="<?php echo site_url('assets/admin/js/bootstrap.min.js');?>"></script>
 </body>
 </html>

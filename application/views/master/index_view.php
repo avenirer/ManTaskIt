@@ -52,7 +52,7 @@
                                     echo '<tr>';
                                     echo '<td>'.$ip->ip.'</td>';
                                     echo '<td class="text-right">';
-                                    echo anchor('admin/master/remove-ip/'.$ip->id,'<span class="glyphicon glyphicon-remove"></span>','onclick="return confirm(\'Are you sure you want to un-ban IP?\')"');
+                                    echo anchor('master/remove-ip/'.$ip->id,'<span class="glyphicon glyphicon-remove"></span>','onclick="return confirm(\'Are you sure you want to un-ban IP?\')"');
                                     echo '</td>';
                                     echo '</tr>';
                                 }

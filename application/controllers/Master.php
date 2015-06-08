@@ -2,18 +2,19 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Master extends Admin_Controller
+class Master extends MY_Controller
 {
 
     function __construct()
     {
         parent::__construct();
-        if(!$this->ion_auth->in_group('admin'))
+        if(!$this->ion_auth->is_admin())
         {
             $this->postal->add('You are not allowed to visit the MASTER page','error');
             redirect('admin');
         }
         $this->load->model('website_model');
+        $this->load->model('banned_model');
         $this->load->library('form_validation');
         $this->load->helper('form');
     }
@@ -43,7 +44,9 @@ class Master extends Admin_Controller
 
             }
         }
-        $this->load->model('banned_model');
+
+        //$banned = $this->banned_model->get_all();
+
         $this->data['banned_ips'] = $this->banned_model->get_all();
         $rules = $this->website_model->rules;
         $this->form_validation->set_rules($rules['update']);
@@ -51,7 +54,7 @@ class Master extends Admin_Controller
         {
             $this->data['website'] = $this->website;
             $this->data['writable_directories'] = $writable_directories;
-            $this->render('admin/master/index_view');
+            $this->render('master/index_view');
         }
         else
         {
@@ -69,7 +72,7 @@ class Master extends Admin_Controller
             {
                 $this->postal->add('There was a problem... Are you sure you\'ve changed anything?','error');
             }
-            redirect('admin/master');
+            redirect('master');
         }
     }
 
@@ -85,7 +88,7 @@ class Master extends Admin_Controller
         {
             $this->postal->add('Couldn\'t change the status of the site','error');
         }
-        redirect('admin/master');
+        redirect('master');
     }
 
     public function add_ip()
@@ -96,7 +99,7 @@ class Master extends Admin_Controller
         if($this->form_validation->run()===FALSE)
         {
             $this->postal->add('Couldn\' insert banned IP','success');
-            redirect('admin/master');
+            redirect('master');
         }
         else
         {
@@ -104,7 +107,7 @@ class Master extends Admin_Controller
             if($this->banned_model->insert(array('ip'=>$ip,'created_by'=>$this->user_id)))
             {
                 $this->postal->add('IP inserted successfully','success');
-                redirect('admin/master');
+                redirect('master');
             }
         }
 
@@ -122,6 +125,6 @@ class Master extends Admin_Controller
         {
             $this->postal->add('Couldn\' remove banned IP','error');
         }
-        redirect('admin/master');
+        redirect('master');
     }
 }

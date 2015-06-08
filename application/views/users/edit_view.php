@@ -79,7 +79,7 @@
             </div>
             <?php echo form_hidden('user_id',$user->id);?>
             <?php echo form_submit('submit', 'Edit user', 'class="btn btn-primary btn-lg btn-block"');?>
-            <?php echo anchor('/admin/users', 'Cancel','class="btn btn-default btn-lg btn-block"');?>
+            <?php echo anchor('users', 'Cancel','class="btn btn-default btn-lg btn-block"');?>
             <?php echo form_close();?>
         </div>
     </div>

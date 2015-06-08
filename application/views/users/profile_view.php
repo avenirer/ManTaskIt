@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-lg-4 col-lg-offset-4">
             <h1>Profile page</h1>
-            <?php echo form_open('',array('class'=>'form-horizontal'));?>
+            <?php echo form_open();?>
             <div class="form-group">
                 <?php
                 echo form_label('First name','first_name');
