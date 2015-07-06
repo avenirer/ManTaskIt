@@ -11,8 +11,8 @@
                         foreach($categories as $category)
                         {
                             echo '<li class="list-group-item">';
-                            echo anchor('categories/index/'.$category->id,$category->title).' ';
-                            echo anchor('categories/edit/'.$category->id,'<span class="glyphicon glyphicon-pencil"></span>');
+                            echo anchor('categories/index/'.$category->id,$category->title);
+                            echo ' <span class="badge">42</span>';
                             echo '</li>';
                         }
                         echo '</ul>';
