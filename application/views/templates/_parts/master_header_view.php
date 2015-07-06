@@ -110,13 +110,19 @@ if($this->ion_auth->logged_in()) {
                     <li>...</li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Take care! <span class="caret"></span></a>
+                    <?php
+                    if($this->ion_auth->is_admin()) {
+                        ?>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false">Take care! <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="<?php echo site_url('master');?>">Website settings</a></li>
                             </ul>
-                    </li>
+                        </li>
+                    <?php
+                    }
+                        ?>
 
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $this->ion_auth->user()->row()->username;?> <span class="caret"></span></a>

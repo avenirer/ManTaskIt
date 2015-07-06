@@ -104,7 +104,7 @@ $autoload['helper'] = array('url');
 |
 */
 
-$autoload['config'] = array('cms_settings');
+$autoload['config'] = array();
 
 
 /*

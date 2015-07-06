@@ -7,15 +7,15 @@ class Users extends MY_Controller
     function __construct()
     {
         parent::__construct();
-        if(!$this->ion_auth->is_admin())
-        {
-            $this->postal->add('You are not allowed to visit the Users page','error');
-            redirect('admin');
-        }
     }
 
     public function index($group_id = NULL)
     {
+        if(!$this->ion_auth->is_admin())
+        {
+            $this->postal->add('You are not allowed to visit the Users page','error');
+            redirect();
+        }
         $this->data['page_title'] = 'Users';
         //$this->data['users'] = $this->ion_auth->users($group_id)->result();
         $this->data['users'] = $this->ion_auth->users(array(1,'members'))->result();
@@ -24,6 +24,11 @@ class Users extends MY_Controller
 
     public function create()
     {
+        if(!$this->ion_auth->is_admin())
+        {
+            $this->postal->add('You are not allowed to visit the Users page','error');
+            redirect();
+        }
         $this->data['page_title'] = 'Create user';
         $this->load->library('form_validation');
         $this->form_validation->set_rules('first_name','First name','trim');
@@ -63,6 +68,11 @@ class Users extends MY_Controller
 
     public function edit($user_id = NULL)
     {
+        if(!$this->ion_auth->is_admin())
+        {
+            $this->postal->add('You are not allowed to visit the Users page','error');
+            redirect();
+        }
         $user_id = $this->input->post('user_id') ? $this->input->post('user_id') : $user_id;
         if($this->data['current_user']->id == $user_id)
         {
@@ -142,7 +152,7 @@ class Users extends MY_Controller
         $user = $this->ion_auth->user()->row();
         $this->data['user'] = $user;
         $this->data['current_user_menu'] = '';
-        if($this->ion_auth->in_group('admin'))
+        if($this->ion_auth->is_admin())
         {
             $this->data['current_user_menu'] = $this->load->view('templates/_parts/user_menu_admin_view.php', NULL, TRUE);
         }
@@ -168,13 +178,18 @@ class Users extends MY_Controller
             if(strlen($this->input->post('password'))>=6) $new_data['password'] = $this->input->post('password');
             $this->ion_auth->update($user->id, $new_data);
             $this->postal->add($this->ion_auth->messages(),'error');
-            redirect('user/profile');
+            redirect('users/profile');
 
         }
     }
 
     public function delete($user_id = NULL)
     {
+        if(!$this->ion_auth->is_admin())
+        {
+            $this->postal->add('You are not allowed to visit the Users page','error');
+            redirect();
+        }
         if(is_null($user_id))
         {
             $this->postal->add('There\'s no user to delete','error');
@@ -184,6 +199,6 @@ class Users extends MY_Controller
             $this->ion_auth->delete_user($user_id);
             $this->postal->add($this->ion_auth->messages(),'success');
         }
-        redirect('admin/users');
+        redirect('users');
     }
 }

@@ -11,7 +11,7 @@ class Master extends MY_Controller
         if(!$this->ion_auth->is_admin())
         {
             $this->postal->add('You are not allowed to visit the MASTER page','error');
-            redirect('admin');
+            redirect('');
         }
         $this->load->model('website_model');
         $this->load->model('banned_model');

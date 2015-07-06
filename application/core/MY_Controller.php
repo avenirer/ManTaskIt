@@ -7,12 +7,9 @@ class MY_Controller extends CI_Controller
 	function __construct()
 	{
 		parent::__construct();
-
-        $this->load->model('website_model');
-        $this->load->model('banned_model');
         $this->website = $this->website_model->get();
         $this->data['website'] = $this->website;
-        $this->data['page_title'] = '';
+        $this->data['page_title'] = $this->website->title;
         $this->data['page_description'] = '';
 		$this->data['before_head'] = '';
 		$this->data['before_body'] = '';
@@ -27,8 +24,6 @@ class MY_Controller extends CI_Controller
         $this->data['current_user'] = $current_user;
         $this->data['current_user_menu'] = '';
         if($this->ion_auth->is_admin()) $this->data['current_user_menu'] = $this->load->view('templates/_parts/user_menu_admin_view',NULL, TRUE);
-
-        $this->load->model('banned_model');
         $ips = $this->banned_model->get_all();
         $banned_ips = array();
         if(!empty($ips))

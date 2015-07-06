@@ -12,10 +12,10 @@ class Postal {
         if(empty($this->message_types))
         {
             $this->message_types = ($this->ci->config->item('message_types','postal') !== NULL) ? $this->ci->config->item('message_types','postal') : array(
-                    'success' => array('<div class="success">', '</div>'),
-                    'error' => array('<div class="error">', '</div>'),
-                    'message' => array('<div class="message">', '</div>')
-                );
+                'success' => array('<div class="success">', '</div>'),
+                'error' => array('<div class="error">', '</div>'),
+                'message' => array('<div class="message">', '</div>')
+            );
         }
     }
 
