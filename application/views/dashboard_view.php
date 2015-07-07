@@ -20,10 +20,13 @@
                     ?>
                 <div class="panel-footer">
                     <?php
+                    echo anchor('categories/add','<span class="glyphicon glyphicon-plus"></span>','class="btn btn-primary btn-block" target="_blank"');
+                    /*
                     echo form_open();
                     echo form_error('category');
                     echo form_input('category',set_value('category'),'class="form-control" placeholder="Add category"');
                     echo form_close();
+                    */
                     ?>
                 </div>
             </div>

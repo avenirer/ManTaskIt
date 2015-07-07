@@ -13,7 +13,8 @@ class Welcome extends MY_Controller
 
     public function index()
     {
-        $this->form_validation->set_rules('category','Category','trim|required|is_unique[categories.title]');
+        $rules = $this->category_model->rules;
+        $this->form_validation->set_rules($rules['insert']);
         $this->data['categories'] = $this->category_model->get_all();
         if($this->form_validation->run())
         {
