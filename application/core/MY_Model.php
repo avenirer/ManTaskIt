@@ -1,4 +1,21 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
+/*
+* Copyright (C) 2014 @avenirer [avenir.ro@gmail.com]
+* Everyone is permitted to copy and distribute verbatim or modified copies of this license document, 
+* and changing it is allowed as long as the name is changed.
+* DON'T BE A DICK PUBLIC LICENSE TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+*
+***** Do whatever you like with the original work, just don't be a dick.
+***** Being a dick includes - but is not limited to - the following instances:
+********* 1a. Outright copyright infringement - Don't just copy this and change the name.
+********* 1b. Selling the unmodified original with no work done what-so-ever, that's REALLY being a dick.
+********* 1c. Modifying the original work to contain hidden harmful content. That would make you a PROPER dick.
+***** If you become rich through modifications, related works/services, or supporting the original work, share the love. Only a dick would make loads off this work and not buy the original works creator(s) a pint.
+***** Code is provided with no warranty. 
+*********** Using somebody else's code and bitching when it goes wrong makes you a DONKEY dick. 
+*********** Fix the problem yourself. A non-dick would submit the fix back.
+ * 
+ */
 
 /** how to extend MY_Model:
  *	class User_model extends MY_Model
@@ -260,11 +277,11 @@ class MY_Model extends CI_Model
 
         elseif($this->return_as == 'dropdown')
         {
-            $data = array();
             foreach($data as $row)
             {
                 $dropdown[$row[$this->primary_key]] = $row[$this->_dropdown_field];
             }
+            $data = $dropdown;
         }
         return $data;
     }
@@ -735,6 +752,7 @@ class MY_Model extends CI_Model
 
         if(isset($data) && $data !== FALSE)
         {
+            $this->_database->reset_query();
             return $data;
         }
         else
@@ -793,6 +811,7 @@ class MY_Model extends CI_Model
 
         if(isset($data) && $data !== FALSE)
         {
+            $this->_database->reset_query();
             return $data;
         }
         else
@@ -863,7 +882,15 @@ class MY_Model extends CI_Model
                 foreach($arguments as $argument)
                 {
                     $elements = explode(':',$argument);
-                    $parameters[$elements[0]] = $elements[1];
+                    if(sizeof($elements)==2)
+                    {
+                        $parameters[$elements[0]] = $elements[1];
+                    }
+                    else
+                    {
+                        show_error('MY_Model: Parameters for with() method must be of the form: "...->with(\'where:...|fields:...\')"');
+                        die();
+                    }
                 }
             }
             $this->_requested[$request]['parameters'] = $parameters;
@@ -918,27 +945,30 @@ class MY_Model extends CI_Model
             if(!isset($pivot_table))
             {
                 $sub_results = $this->{$relation['foreign_model']}->as_array();
+                $select = array();
+                $select[] = '`'.$foreign_table.'`.`'.$foreign_key.'`';
                 if(!empty($request['parameters']))
                 {
                     if(array_key_exists('fields',$request['parameters']))
                     {
                         $fields = explode(',',$request['parameters']['fields']);
-                        $select = array();
                         foreach($fields as $field)
                         {
                             $select[] = '`'.$foreign_table.'`.`'.trim($field).'`';
                         }
                         $the_select = implode(',',$select);
                     }
-                    $sub_results = (isset($the_select)) ? $sub_results->fields($the_select.','.$foreign_table.'.'.$foreign_key) : $sub_results;
+                    $sub_results = (isset($the_select)) ? $sub_results->fields($the_select) : $sub_results;
                     $sub_results = (array_key_exists('where',$request['parameters'])) ? $sub_results->where($request['parameters']['where'],NULL,NULL,FALSE,FALSE,TRUE) : $sub_results;
                 }
                 $sub_results = $sub_results->where($foreign_key, $local_key_values)->get_all();
             }
             else
             {
-                $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.singular($foreign_table).'_'.$foreign_key, 'inner');
-                $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$local_key.' = '.$this->table.'.'.$local_key,'inner');
+                $this->_database->join($pivot_table, $foreign_table.'.'.$foreign_key.' = '.$pivot_table.'.'.singular($foreign_table).'_'.$foreign_key, 'left');
+                $this->_database->join($this->table, $pivot_table.'.'.singular($this->table).'_'.$local_key.' = '.$this->table.'.'.$local_key,'left');
+                $this->_database->select($foreign_table.'.'.$foreign_key);
+                $this->_database->select($pivot_table.'.'.singular($this->table).'_'.$local_key);
                 if(!empty($request['parameters']))
                 {
                     if(array_key_exists('fields',$request['parameters']))
@@ -951,7 +981,6 @@ class MY_Model extends CI_Model
                         }
                         $the_select = implode(',',$select);
                         $this->_database->select($the_select);
-                        $this->_database->select($foreign_table.'.'.$foreign_key);
                     }
 
                     if(array_key_exists('where',$request['parameters']))
@@ -966,13 +995,19 @@ class MY_Model extends CI_Model
 
             if(isset($sub_results) && !empty($sub_results)) {
                 $subs = array();
+
                 foreach ($sub_results as $result) {
                     $the_foreign_key = $result[$foreign_key];
-                    if(isset($request['parameters']['fields']) && !strstr($request['parameters']['fields'], $foreign_key))
+                    if(isset($pivot_table))
                     {
-                        unset($result[$foreign_key]);
+                        $the_local_key = $result[singular($this->table) . '_' . $local_key];
+                        $subs[$the_local_key][$the_foreign_key] = $result;
                     }
-                    $subs[$the_foreign_key][] = $result;
+                    else
+                    {
+                        $subs[$the_foreign_key] = $result;
+                    }
+
                 }
                 $sub_results = $subs;
 
@@ -980,14 +1015,7 @@ class MY_Model extends CI_Model
                 {
                     if(array_key_exists($value,$sub_results))
                     {
-                        if ($type == 'has_one')
-                        {
-                            $data[$key][$relation_key] = $sub_results[$value][0];
-                        }
-                        else
-                        {
-                            $data[$key][$relation_key] = $sub_results[$value];
-                        }
+                        $data[$key][$relation_key] = $sub_results[$value];
                     }
                 }
             }
@@ -1222,7 +1250,8 @@ class MY_Model extends CI_Model
     {
         $this->return_as = 'dropdown';
         $this->_dropdown_field = $field;
-        $this->_select(array($this->primary_key, $field));
+        $this->_select = array($this->primary_key, $field);
+        return $this;
     }
 
     public function set_cache($string, $seconds = 86400)

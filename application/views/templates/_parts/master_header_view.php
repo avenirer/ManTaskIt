@@ -11,21 +11,17 @@
         <link href="<?php echo site_url('assets/css/bootstrap.min.css');?>" rel="stylesheet">
         <link href="<?php echo site_url('assets/css/bootstrap-datetimepicker.min.css');?>" rel="stylesheet">
         <?php echo $before_head;?>
-        <link rel="stylesheet" href="<?php echo site_url('assets/css/textext/textext.core.css');?>" type="text/css" />
-        <!--<link rel="stylesheet" href="<?php echo site_url('assets/css/textext/textext.plugin.tags.css');?>" type="text/css" />-->
-        <link rel="stylesheet" href="<?php echo site_url('assets/css/textext/textext.plugin.autocomplete.css');?>" type="text/css" />
         <!--<link rel="stylesheet" href="<?php echo site_url('assets/css/textext/textext.plugin.focus.css');?>" type="text/css" />-->
         <!--<link rel="stylesheet" href="<?php echo site_url('assets/css/textext/textext.plugin.prompt.css');?>" type="text/css" />-->
-        <!--<link rel="stylesheet" href="<?php echo site_url('assets/css/textext/textext.plugin.arrow.css');?>" type="text/css" />-->
         <script src="<?php echo site_url('assets/js/textext.core.js');?>" type="text/javascript" charset="utf-8"></script>
-        <!--<script src="<?php echo site_url('assets/js/textext.plugin.tags.js');?>" type="text/javascript" charset="utf-8"></script>-->
+        <script src="<?php echo site_url('assets/js/textext.plugin.tags.js');?>" type="text/javascript" charset="utf-8"></script>
         <script src="<?php echo site_url('assets/js/textext.plugin.autocomplete.js');?>" type="text/javascript" charset="utf-8"></script>
         <!--<script src="<?php echo site_url('assets/js/textext.plugin.suggestions.js');?>" type="text/javascript" charset="utf-8"></script>-->
         <script src="<?php echo site_url('assets/js/textext.plugin.filter.js');?>" type="text/javascript" charset="utf-8"></script>
         <!--<script src="<?php echo site_url('assets/js/textext.plugin.focus.js');?>" type="text/javascript" charset="utf-8"></script>-->
         <!--<script src="<?php echo site_url('assets/js/textext.plugin.prompt.js');?>" type="text/javascript" charset="utf-8"></script>-->
         <script src="<?php echo site_url('assets/js/textext.plugin.ajax.js');?>" type="text/javascript" charset="utf-8"></script>
-        <!--<script src="<?php echo site_url('assets/js/textext.plugin.arrow.js');?>" type="text/javascript" charset="utf-8"></script>-->
+        <script src="<?php echo site_url('assets/js/textext.plugin.arrow.js');?>" type="text/javascript" charset="utf-8"></script>
         <script type="text/javascript" src="<?php echo site_url('assets/js/tinymce/tinymce.min.js');?>"></script>
         <script type="text/javascript">
             tinymce.init({

@@ -704,6 +704,7 @@
 
 		// set the name of the hidden input to the text input's name
 		hiddenInput.attr('name', input.attr('name'));
+
 		// remove name attribute from the text input
 		input.attr('name', null);
 		// add hidden input to the DOM

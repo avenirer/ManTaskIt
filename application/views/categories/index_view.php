@@ -19,8 +19,9 @@
                 </thead>
                 <tbody>
                 <?php
-                if(!empty($categories))
+                if(!empty($user->categories))
                 {
+                    $categories = $user->categories;
                     foreach($categories as $category)
                     {
                         echo '<tr>';

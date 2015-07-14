@@ -221,19 +221,14 @@ class Matches extends CI_Controller {
             }
             else
             {
-                if(file_exists($this->_templates_loc.'controller_template.txt'))
-                {
-                    $f = file_get_contents($this->_templates_loc.'controller_template.txt');
-                }
-                else
-                {
-                    echo $this->_ret.'Couldn\'t find Controller template.';
-                    return FALSE;
-                }
+                $f = $this->_get_template('controller');
+                if($f === FALSE) return FALSE;
                 $this->_find_replace['{{CONTROLLER}}'] = $class_name;
                 $this->_find_replace['{{CONTROLLER_FILE}}'] = $file_name.'.php';
                 $this->_find_replace['{{MV}}'] = strtolower($class_name);
-                $this->_find_replace['{{C_EXTENDS}}'] = array_key_exists('extend',$arguments) ? strtoupper($arguments['extend']) : $this->_c_extends;
+                $extends = array_key_exists('extend',$arguments) ? $arguments['extend'] : $this->_c_extends;
+                $extends = in_array(strtolower($extends),array('my','ci')) ? strtoupper($extends) : ucfirst($extends);
+                $this->_find_replace['{{C_EXTENDS}}'] = $extends;
                 $f = strtr($f,$this->_find_replace);
                 if(strlen($directories)>0 && !file_exists(APPPATH.'controllers/'.$directories))
                 {
@@ -289,18 +284,15 @@ class Matches extends CI_Controller {
             }
             else
             {
-                if(file_exists($this->_templates_loc.'model_template.txt'))
-                {
-                    $f = file_get_contents($this->_templates_loc.'model_template.txt');
-                }
-                else
-                {
-                    echo $this->_ret.'Couldn\'t find Model template.';
-                    return FALSE;
-                }
+                $f = $this->_get_template('model');
+                if($f === FALSE) return FALSE;
                 $this->_find_replace['{{MODEL}}'] = $class_name;
                 $this->_find_replace['{{MODEL_FILE}}'] = $file_name.'.php';
-                $this->_find_replace['{{MO_EXTENDS}}'] = $this->_mo_extends;
+
+                $extends = array_key_exists('extend',$arguments) ? $arguments['extend'] : $this->_mo_extends;
+                $extends = in_array(strtolower($extends),array('my','ci')) ? strtoupper($extends) : ucfirst($extends);
+
+                $this->_find_replace['{{MO_EXTENDS}}'] = $extends;
                 $f = strtr($f,$this->_find_replace);
                 if(strlen($directories)>0 && !file_exists(APPPATH.'models/'.$directories))
                 {
@@ -356,15 +348,8 @@ class Matches extends CI_Controller {
             }
             else
             {
-                if(file_exists($this->_templates_loc.'view_template.txt'))
-                {
-                    $f = file_get_contents($this->_templates_loc.'view_template.txt');
-                }
-                else
-                {
-                    echo $this->_ret.'Couldn\'t find View template.';
-                    return FALSE;
-                }
+                $f = $this->_get_template('view');
+                if($f === FALSE) return FALSE;
                 $this->_find_replace['{{VIEW}}'] = $file_name.'.php';
                 $f = strtr($f,$this->_find_replace);
                 if(strlen($directories)>0 && !file_exists(APPPATH.'views/'.$directories))
@@ -389,12 +374,72 @@ class Matches extends CI_Controller {
         }
     }
 
-    public function do_migration()
+    public function do_migration($version = NULL)
     {
         $this->load->library('migration');
-        if ($this->migration->current() === FALSE)
+        if(isset($version) && ($this->migration->version($version) === FALSE))
         {
             show_error($this->migration->error_string());
+        }
+        elseif(is_null($version) && $this->migration->latest() === FALSE)
+        {
+            show_error($this->migration->error_string());
+        }
+        else
+        {
+            echo $this->_ret.'The migration has concluded successfully.';
+        }
+        return TRUE;
+    }
+
+    public function undo_migration($version = NULL)
+    {
+        $this->load->library('migration');
+        $migrations = $this->migration->find_migrations();
+        $migration_keys = array();
+        foreach($migrations as $key => $migration)
+        {
+            $migration_keys[] = $key;
+        }
+        if(isset($version) && array_key_exists($version,$migrations) && $this->migration->version($version))
+        {
+            echo $this->_ret.'The migration was reset to the version: '.$version;
+            return TRUE;
+        }
+        elseif(isset($version) && !array_key_exists($version,$migrations))
+        {
+            echo $this->_ret.'The migration with version number '.$version.' doesn\'t exist.';
+        }
+        else
+        {
+            $penultimate = (sizeof($migration_keys)==1) ? 0 : $migration_keys[sizeof($migration_keys) - 2];
+
+            if($this->migration->version($penultimate))
+            {
+                echo $this->_ret.'The migration has been rolled back successfully.';
+                return TRUE;
+            }
+            else
+            {
+                echo $this->_ret.'Couldn\'t roll back the migration.';
+                return FALSE;
+            }
+        }
+    }
+
+    public function reset_migration()
+    {
+        $this->load->library('migration');
+        if($this->migration->current()!== FALSE)
+        {
+            echo $this->_ret.'The migration was reset to the version set in the config file.';
+            return TRUE;
+        }
+        else
+        {
+            echo $this->_ret.'Couldn\'t reset migration.';
+            show_error($this->migration->error_string());
+            return FALSE;
         }
     }
 
@@ -474,19 +519,16 @@ class Matches extends CI_Controller {
             }
             else
             {
-                if(file_exists($this->_templates_loc.'migration_template.txt'))
-                {
-                    $f = file_get_contents($this->_templates_loc.'migration_template.txt');
-                }
-                else
-                {
-                    echo $this->_ret.'Couldn\'t find Migration template.';
-                    return FALSE;
-                }
+                $f = $this->_get_template('migration');
+                if($f === FALSE) return FALSE;
                 $this->_find_replace['{{MIGRATION}}'] = $class_name;
                 $this->_find_replace['{{MIGRATION_FILE}}'] = $file_name;
                 $this->_find_replace['{{MIGRATION_PATH}}'] = $migration_path;
-                $this->_find_replace['{{MI_EXTENDS}}'] = array_key_exists('extend',$arguments) ? strtoupper($arguments['extend']) : $this->_mi_extends;
+
+                $extends = array_key_exists('extend',$arguments) ? $arguments['extend'] : $this->_mi_extends;
+                $extends = in_array(strtolower($extends),array('my','ci')) ? strtoupper($extends) : ucfirst($extends);
+
+                $this->_find_replace['{{MI_EXTENDS}}'] = $extends;
                 $table = 'SET_YOUR_TABLE_HERE';
                 if(array_key_exists('table',$arguments))
                 {
@@ -603,5 +645,18 @@ class Matches extends CI_Controller {
         return $file_name;
     }
 
-
+    private function _get_template($type)
+    {
+        $template_loc = $this->_templates_loc.$type.'_template.txt';
+        if(file_exists($template_loc))
+        {
+            $f = file_get_contents($template_loc);
+            return $f;
+        }
+        else
+        {
+            echo $this->_ret.'Couldn\'t find '.$type.' template.';
+            return FALSE;
+        }
+    }
 }

@@ -7,6 +7,7 @@ class Users extends MY_Controller
     function __construct()
     {
         parent::__construct();
+        $this->load->model('user_model');
     }
 
     public function index($group_id = NULL)
@@ -62,6 +63,7 @@ class Users extends MY_Controller
             );
             $this->ion_auth->register($username, $password, $email, $additional_data, $group_ids);
             $this->postal->add($this->ion_auth->messages(),'success');
+            $this->user_model->delete_cache('get_all_users');
             redirect('users');
         }
     }
@@ -142,6 +144,7 @@ class Users extends MY_Controller
                 }
             }
             $this->postal->add($this->ion_auth->messages(),'success');
+            $this->user_model->delete_cache('get_all_users');
             redirect('users');
         }
     }
@@ -198,6 +201,7 @@ class Users extends MY_Controller
         {
             $this->ion_auth->delete_user($user_id);
             $this->postal->add($this->ion_auth->messages(),'success');
+            $this->load->model('user_model');
         }
         redirect('users');
     }
