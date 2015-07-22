@@ -1,5 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');?>
-<div class="container" style="margin-top:60px;">
+<div class="container">
     <h1>Category: <?php echo $category->title;?></h1>
 	<div class="row">
         <div class="col-lg-6">
@@ -7,7 +7,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <?php
-                    echo anchor('projects/add','Add project','class="btn btn-primary" target="_blank"');
+                    echo anchor('projects/add/' . $category->id,'Add project','class="btn btn-primary"');
                     ?>
                 </div>
             </div>
@@ -36,12 +36,12 @@
             </table>
         </div>
         <div class="col-lg-6">
-            <h2>Users</h2>
+            <h2>Members</h2>
             <div class="row">
                 <div class="col-lg-12">
                     <?php
                     if($role == 'admin') {
-                        echo anchor('categories/admin_users/' . $category->id, 'Administer members', 'class="btn btn-primary"');
+                        echo anchor('members/index/category/' . $category->id, 'Administer members', 'class="btn btn-primary"');
                     }
                     ?>
                 </div>
@@ -49,22 +49,34 @@
             <table class="table table-striped table-condensed">
                 <thead>
                 <tr>
-                    <th scope="col">User</th>
-                    <th scope="col">Options</th>
+                    <th scope="col">Member</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php
-                if(!empty($category->users))
+                if(!empty($users))
                 {
-                    $users = $category->users;
                     foreach($users as $user)
                     {
-                        echo '<tr>';
-                        echo '<td>'.anchor('projects/user/'.$category->id,$user->email).'</td>';
-                        echo '<td>';
-
-                        echo '</td>';
+                        echo '<tr';
+                        if($user->user_id===$this->user_id)
+                        {
+                            echo ' class="info"';
+                        }
+                        elseif($user->role==='admin')
+                        {
+                            echo ' class="success"';
+                        }
+                        elseif($user->role==='view')
+                        {
+                            echo ' class="warning"';
+                        }
+                        elseif($user->role==='removed')
+                        {
+                            echo ' class="danger"';
+                        }
+                        echo '>';
+                        echo '<td>'.anchor('projects/user/'.$category->id,$user->user->email).'</td>';
                         echo '</tr>';
                     }
                 }

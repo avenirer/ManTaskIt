@@ -1,4 +1,4 @@
-<div class="container" style="margin-top:60px;">
+<div class="container">
 	<h1>Welcome to the Dashboard!</h1>
     <div class="row">
         <div class="col-lg-4">
@@ -20,7 +20,7 @@
                     ?>
                 <div class="panel-footer">
                     <?php
-                    echo anchor('categories/add','<span class="glyphicon glyphicon-plus"></span>','class="btn btn-primary btn-block" target="_blank"');
+                    echo anchor('categories/add','<span class="glyphicon glyphicon-plus"></span>','class="btn btn-primary btn-block"');
                     /*
                     echo form_open();
                     echo form_error('category');

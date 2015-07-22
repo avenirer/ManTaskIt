@@ -23,6 +23,11 @@ class Migration_Add_categories_users_table extends CI_Migration
                 'type' => 'INT',
                 'constraint' => 11,
                 'unsigned' => TRUE
+            ),
+            'role' => array(
+                'type'=>'varchar',
+                'constraint'=>20,
+                'default'=>'edit'
             )
         );
         $this->dbforge->add_field($fields);

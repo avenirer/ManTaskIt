@@ -19,7 +19,7 @@ class Category_model extends MY_Model
         ),
         'insert_users' => array(
             'category_id' => array('field'=>'category_id','label'=>'Category ID','rules'=>'trim|required|is_natural_no_zero'),
-            'email' => array('field'=>'email','label'=>'Email','rules'=>'trim|required|valid_email')
+            //'email' => array('field'=>'email','label'=>'Email','rules'=>'trim|required|valid_email')
         )
     );
 }

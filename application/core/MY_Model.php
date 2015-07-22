@@ -744,9 +744,6 @@ class MY_Model extends CI_Model
             $this->load->driver('cache');
             $cache_name = $this->_cache['cache_name'];
             $seconds = $this->_cache['seconds'];
-        }
-        if(isset($this->_cache) && !empty($this->_cache))
-        {
             $data = $this->cache->{$this->cache_driver}->get($cache_name);
         }
 
@@ -802,10 +799,6 @@ class MY_Model extends CI_Model
             $this->load->driver('cache');
             $cache_name = $this->_cache['cache_name'];
             $seconds = $this->_cache['seconds'];
-        }
-
-        if(isset($this->_cache) && !empty($this->_cache))
-        {
             $data = $this->cache->{$this->cache_driver}->get($cache_name);
         }
 
@@ -889,7 +882,6 @@ class MY_Model extends CI_Model
                     else
                     {
                         show_error('MY_Model: Parameters for with() method must be of the form: "...->with(\'where:...|fields:...\')"');
-                        die();
                     }
                 }
             }
@@ -922,6 +914,7 @@ class MY_Model extends CI_Model
      */
     protected function join_temporary_results($data)
     {
+        $order_by = array();
         foreach($this->_requested as $requested_key => $request)
         {
             $pivot_table = NULL;
@@ -936,11 +929,16 @@ class MY_Model extends CI_Model
             $local_key_values = array();
             foreach($data as $key => $element)
             {
-                if(isset($element[$local_key]))
+                if(isset($element[$local_key]) and !empty($element[$local_key]))
                 {
                     $id = $element[$local_key];
                     $local_key_values[$key] = $id;
                 }
+            }
+            if(!$local_key_values)
+            {
+                $data[$key][$relation_key] = NULL;
+                continue;
             }
             if(!isset($pivot_table))
             {
@@ -1008,6 +1006,7 @@ class MY_Model extends CI_Model
                         $subs[$the_foreign_key] = $result;
                     }
 
+
                 }
                 $sub_results = $subs;
 
@@ -1019,7 +1018,27 @@ class MY_Model extends CI_Model
                     }
                 }
             }
+            if(array_key_exists('order_by',$request['parameters']))
+            {
+                $elements = explode(',', $request['parameters']['order_by']);
+                if(sizeof($elements)==2)
+                {
+                    $order_by[$relation_key] = array(trim($elements[0]), trim($elements[1]));
+                }
+                else
+                {
+                    $order_by[$relation_key] = array(trim($elements[0]), 'desc');
+                }
+            }
             unset($this->_requested[$requested_key]);
+        }
+        if($order_by)
+        {
+            foreach($order_by as $field => $row)
+            {
+                list($key, $value) = $row;
+                $data = $this->_build_sorter($data, $field, $key, $value);
+            }
         }
         return $data;
         //if(sizeof($data)==1) $data = $data[0];
@@ -1246,8 +1265,13 @@ class MY_Model extends CI_Model
         return $this;
     }
 
-    public function as_dropdown($field)
+    public function as_dropdown($field = NULL)
     {
+        if(!isset($field))
+        {
+            show_error('MY_Model: You must set a field to be set as value for the key: ...->as_dropdown(\'field\')->...');
+            exit;
+        }
         $this->return_as = 'dropdown';
         $this->_dropdown_field = $field;
         $this->_select = array($this->primary_key, $field);
@@ -1398,10 +1422,6 @@ class MY_Model extends CI_Model
             $this->load->driver('cache');
             $cache_name = $this->_cache['cache_name'].'_'.$page_number;
             $seconds = $this->_cache['seconds'];
-        }
-
-        if(isset($this->_cache) && !empty($this->_cache))
-        {
             $data = $this->cache->{$this->cache_driver}->get($cache_name);
         }
 
@@ -1484,5 +1504,14 @@ class MY_Model extends CI_Model
             return $this;
         }
         else echo 'No method with that name ('.$method.') in MY_Model.';
+    }
+
+    private function _build_sorter($data, $field, $order_by, $sort_by = 'DESC')
+    {
+        usort($data, function($a, $b) use ($field, $order_by, $sort_by) {
+            return strtoupper($sort_by) ==  "DESC" ? ($a[$field][$order_by] < $b[$field][$order_by]) : ($a[$field][$order_by] > $b[$field][$order_by]);
+        });
+
+        return $data;
     }
 }

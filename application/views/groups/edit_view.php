@@ -1,5 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');?>
-<div class="container" style="margin-top: 40px;">
+<div class="container">
     <div class="row">
         <div class="col-lg-4 col-lg-offset-4">
             <h1>Edit group</h1>

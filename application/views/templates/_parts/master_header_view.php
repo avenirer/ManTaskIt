@@ -134,7 +134,7 @@ if($this->ion_auth->logged_in()) {
             <!--/.nav-collapse -->
         </div>
     </nav>
-    <div class="container" style="padding-top:60px;">
+    <div class="container" style="margin-top:60px;">
         <?php
         echo $this->postal->get();
         ?>
