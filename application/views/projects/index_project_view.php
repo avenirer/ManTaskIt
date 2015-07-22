@@ -9,7 +9,7 @@
         </div>
     </div>
 	<div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <h2>Tasks</h2>
             <div class="row">
                 <div class="col-lg-12">
@@ -26,20 +26,23 @@
                 <tr>
                     <th scope="col"><span class="glyphicon glyphicon-tag"></span></th>
                     <th scope="col">Task</th>
-                    <th scope="col">&nbsp;</th>
-                    <th scope="col">&nbsp;</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Assigned to</th>
+                    <th scope="col">Progress</th>
+                    <th scope="col">Due date</th>
                 </tr>
                 </thead>
                 <tbody>
                 <?php
                 if(!empty($tasks))
                 {
-                    print_r($tasks);
                     foreach($tasks as $task)
                     {
                         echo '<tr>';
-                        echo '<td>'.anchor('tasks/index/'.$task->id,'<span class="badge" style="background-color:'.$task->priority->color.'; border:1px solid #ccc;">&nbsp;</span>').'</td>';
+                        echo '<td>'.anchor('tasks/index/'.$task->id,'<span class="label" style="background-color:'.$task->priority->color.'; border:1px solid #ccc;">&nbsp;</span>').'</td>';
                         echo '<td>'.anchor('tasks/index/'.$task->id,$task->title).'</td>';
+                        echo '<td>'.$task->status->title.'</td>';
+                        echo '<td>'.$task->assignee->email.'</td>';
                         echo '<td>';
                         echo '<div class="progress">';
                         echo '<div class="progress-bar" role="progressbar" aria-valuenow="'.$task->progress.'" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">';
@@ -47,8 +50,8 @@
                         echo '</div>';
                         echo '</div>';
                         echo '</td>';
-                        echo '<td>';
-                        echo $task->due_date;
+                        echo '<td class="text-right">';
+                        echo explode(' ',$task->due_date)[0];
                         echo '</td>';
                         echo '</tr>';
                     }
@@ -57,18 +60,10 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="row">
         <div class="col-lg-6">
-            <h2>Members</h2>
-            <div class="row">
-                <div class="col-lg-12">
-                    <?php
-                    if(in_array($project_role, array('admin')) || in_array($category_role, array('admin','edit')))
-                    {
-                        echo anchor('members/index/project/' . $project->id, 'Administer members', 'class="btn btn-primary"');
-                    }
-                    ?>
-                </div>
-            </div>
+            <h3>Project members</h3>
             <table class="table table-striped table-condensed">
                 <thead>
                 <tr>
@@ -106,6 +101,18 @@
                 ?>
                 </tbody>
             </table>
+            <div class="row">
+                <div class="col-lg-12">
+                    <?php
+                    if(in_array($project_role, array('admin')) || in_array($category_role, array('admin','edit')))
+                    {
+                        echo anchor('members/index/project/' . $project->id, 'Administer members', 'class="btn btn-primary"');
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
             <h3>Category members</h3>
             <table class="table table-striped table-condensed">
                 <thead>

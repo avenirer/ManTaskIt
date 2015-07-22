@@ -47,7 +47,7 @@ class Projects extends MY_Controller
 
             // Get the tasks
             $this->load->model('task_model');
-            $tasks = $this->task_model->where('project_id',$project->id)->order_by('priority','asc')->with_status('fields:id,title')->with_priority('fields:id,title,color')->get_all();
+            $tasks = $this->task_model->where('project_id',$project->id)->order_by('priority','asc')->with_status('fields:id,title')->with_creator('fields:email')->with_assignee('fields:email')->with_priority('fields:id,color,order')->get_all();
 
             $this->data['tasks'] = $tasks;
 

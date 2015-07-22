@@ -1,9 +1,19 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');?>
 <div class="container">
-    <h1>Project: <?php echo $project->title;?></h1>
+    <h1>Task: <?php echo $task->title;?></h1>
+    <div class="row">
+        <div class="col-lg-12">
+            <?php
+            if(in_array($project_role,array('admin','edit')))
+            {
+                echo anchor('tasks/edit/' . $task->id, 'Modify task', 'class="btn btn-primary"').' ';
+            }
+            echo anchor('projects/index/' . $task->project_id, 'Back to project '.$project->title, 'class="btn btn-primary"');
+            ?>
+        </div>
+    </div>
 	<div class="row">
         <div class="col-lg-6">
-            <h2>Tasks</h2>
             <div class="row">
                 <div class="col-lg-12">
                     <?php

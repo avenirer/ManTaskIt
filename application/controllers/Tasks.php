@@ -13,41 +13,73 @@ class Tasks extends MY_Controller
         $this->rules = $this->task_model->rules;
     }
 
-    public function index($task_id)
+    public function index($task_id = NULL)
     {
-        #TODO
-        echo 'not done';
-        exit;
-        $id = intval($project_id);
-        if($id==0)
+        if(!isset($task_id))
         {
-            $this->load->model('user_model');
-            $this->data['user'] = $this->user_model->fields('id,email')->with_projects('fields:title')->where('id',$this->user_id)->get();
-            $this->render('projects/index_view');
+            #TODO
+            echo 'here should be displayed all user tasks';
+        }
+        $task_id = intval($task_id);
+        if($task_id==0)
+        {
+            $this->postal->add('Couldn\'t find the task','error');
+            redirect();
         }
         else
         {
-            $project = $this->project_model->get($id);
+            // get the task
+            $task = $this->task_model
+                ->with_status('fields:id,title')
+                ->with_creator('fields:email,id')
+                ->with_assignee('fields:email,id')
+                ->with_priority('fields:id,color,order')
+                ->get($task_id);
+
+            if($task===FALSE)
+            {
+                $this->postal->add('Couldn\'t find the task','error');
+                redirect();
+            }
+
+            // get the project
+            $project_id = $task->project_id;
+            $project = $this->project_model->get($project_id);
+
+            if($project===FALSE)
+            {
+                $this->postal->add('Project doesn\'t exist.','error');
+                redirect();
+            }
+
+            // find the user's role in the project
             $this->load->model('project_user_model');
-            $project_role = $this->project_user_model->get_role($id,$this->user_id);
+            $project_role = $this->project_user_model->get_role($project->id,$this->user_id);
+
+            // find the user's role in the category of the project
+            $this->load->model('category_user_model');
             $category_role = $this->category_user_model->get_role($project->category_id,$this->user_id);
+
             if($project_role===FALSE && $category_role===FALSE)
             {
-                $this->postal->add('You don\'t have the right to access that project','error');
+
+                $this->postal->add('You don\'t have the right to access the project page','error');
                 redirect();
-                die();
             }
-            $this->load->model('user_model');
-            $members = $this->project_user_model->with_user('fields:id,email')->where('project_id',$project->id)->get_all();
-            $this->data['members'] = $members;
-            $this->load->model('category_user_model');
+
+            // find out the members of the project
+            $project_members = $this->project_user_model->with_user('fields:id,email')->where('project_id', $project->id)->get_all();
+            $this->data['project_members'] = $project_members;
+
+            // find out the members of the category
             $category_members = $this->category_user_model->where('category_id',$project->category_id)->with_user('fields:email,id')->get_all();
             $this->data['category_members'] = $category_members;
+
             $this->data['project_role'] = $project_role;
             $this->data['category_role'] = $category_role;
             $this->data['project'] = $project;
-            //$this->data['tasks'] = $this->task_model->where('project_id',$project->id)->get_all();
-            $this->render('projects/index_project_view');
+            $this->data['task'] = $task;
+            $this->render('tasks/index_task_view');
         }
     }
 

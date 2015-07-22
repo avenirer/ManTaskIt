@@ -10,6 +10,8 @@ class Task_model extends MY_Model
         $this->has_one['project'] = array('Project_model','id','project_id');
         $this->has_one['status'] = array('Task_status_model','id','status');
         $this->has_one['priority'] = array('Task_priority_model','id','priority');
+        $this->has_one['creator'] = array('User_model','id','created_by');
+        $this->has_one['assignee'] = array('User_model','id','assigned_to');
         $this->primary_key = 'id';
         parent::__construct();
     }
