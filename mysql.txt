@@ -1,0 +1,231 @@
+-- Adminer 4.1.0 MySQL dump
+
+SET NAMES utf8;
+SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+DROP TABLE IF EXISTS `banned`;
+CREATE TABLE `banned` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(15) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+  `deleted_at` datetime NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `updated_by` int(11) NOT NULL,
+  `deleted_by` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE `categories` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  `notes` text NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `created_by` int(11) unsigned NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `updated_by` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `categories_users`;
+CREATE TABLE `categories_users` (
+  `category_id` int(11) unsigned NOT NULL,
+  `user_id` int(11) unsigned NOT NULL,
+  `role` varchar(20) NOT NULL DEFAULT 'edit',
+  PRIMARY KEY (`category_id`,`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ci_sessions`;
+CREATE TABLE `ci_sessions` (
+  `id` varchar(40) NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `timestamp` int(10) unsigned NOT NULL DEFAULT '0',
+  `data` blob NOT NULL,
+  PRIMARY KEY (`id`,`ip_address`),
+  KEY `ci_sessions_timestamp` (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `groups`;
+CREATE TABLE `groups` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) NOT NULL,
+  `description` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `login_attempts`;
+CREATE TABLE `login_attempts` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ip_address` varchar(15) NOT NULL,
+  `login` varchar(100) NOT NULL,
+  `time` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `migrations`;
+CREATE TABLE `migrations` (
+  `version` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `projects`;
+CREATE TABLE `projects` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  `category_id` int(11) unsigned NOT NULL,
+  `notes` text NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `created_by` int(11) unsigned NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `updated_by` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `projects_users`;
+CREATE TABLE `projects_users` (
+  `project_id` int(11) unsigned NOT NULL,
+  `user_id` int(11) unsigned NOT NULL,
+  `role` varchar(20) NOT NULL,
+  PRIMARY KEY (`project_id`,`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `tasks`;
+CREATE TABLE `tasks` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) unsigned NOT NULL,
+  `assigned_to` int(11) unsigned NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `summary` tinytext NOT NULL,
+  `description` text NOT NULL,
+  `notes` text NOT NULL,
+  `status` int(2) unsigned NOT NULL,
+  `priority` int(1) unsigned NOT NULL,
+  `progress` int(3) unsigned NOT NULL,
+  `due_date` datetime NOT NULL,
+  `created_by` int(11) unsigned NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_by` int(11) unsigned NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_by` int(11) unsigned NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `tasks` (`id`, `project_id`, `assigned_to`, `title`, `summary`, `description`, `notes`, `status`, `priority`, `progress`, `due_date`, `created_by`, `created_at`, `updated_by`, `updated_at`, `deleted_by`, `deleted_at`) VALUES
+(1,	1,	2,	'Primul task',	'un sumar',	'o descriere',	'note',	1,	4,	86,	'2015-07-21 16:47:54',	1,	'2015-07-21 16:49:02',	1,	'2015-07-24 16:21:17',	0,	NULL);
+
+DROP TABLE IF EXISTS `tasks_history`;
+CREATE TABLE `tasks_history` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) unsigned NOT NULL,
+  `assigned_to` int(11) unsigned NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `summary` tinytext NOT NULL,
+  `description` text NOT NULL,
+  `notes` text NOT NULL,
+  `status` int(2) unsigned NOT NULL,
+  `priority` int(1) unsigned NOT NULL,
+  `progress` int(3) unsigned NOT NULL,
+  `due_date` datetime DEFAULT NULL,
+  `changes` text NOT NULL,
+  `created_by` int(11) unsigned NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_by` int(11) unsigned NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_by` int(11) unsigned NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `tasks_priorities`;
+CREATE TABLE `tasks_priorities` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(30) NOT NULL,
+  `order` int(2) NOT NULL,
+  `color` varchar(7) NOT NULL DEFAULT '#ffffff',
+  `created_by` int(11) unsigned NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_by` int(11) unsigned NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_by` int(11) unsigned NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `tasks_statuses`;
+CREATE TABLE `tasks_statuses` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(30) NOT NULL,
+  `order` int(2) NOT NULL,
+  `created_by` int(11) unsigned NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_by` int(11) unsigned NOT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_by` int(11) unsigned NOT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ip_address` varchar(15) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `salt` varchar(255) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `activation_code` varchar(40) DEFAULT NULL,
+  `forgotten_password_code` varchar(40) DEFAULT NULL,
+  `forgotten_password_time` int(11) unsigned DEFAULT NULL,
+  `remember_code` varchar(40) DEFAULT NULL,
+  `created_on` int(11) unsigned NOT NULL,
+  `last_login` int(11) unsigned DEFAULT NULL,
+  `active` tinyint(1) unsigned DEFAULT NULL,
+  `first_name` varchar(50) DEFAULT NULL,
+  `last_name` varchar(50) DEFAULT NULL,
+  `company` varchar(100) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `users_groups`;
+CREATE TABLE `users_groups` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned NOT NULL,
+  `group_id` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uc_users_groups` (`user_id`,`group_id`),
+  KEY `fk_users_groups_users1_idx` (`user_id`),
+  KEY `fk_users_groups_groups1_idx` (`group_id`),
+  CONSTRAINT `fk_users_groups_users1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `users_groups_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `website`;
+CREATE TABLE `website` (
+  `title` varchar(255) NOT NULL,
+  `page_title` varchar(255) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `admin_email` varchar(200) NOT NULL,
+  `contact_email` varchar(200) NOT NULL,
+  `modified_by` varchar(200) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+-- 2015-07-24 14:06:57
