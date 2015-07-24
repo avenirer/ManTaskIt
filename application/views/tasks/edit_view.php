@@ -5,9 +5,11 @@
         <div class="col-lg-12" style="margin-bottom: 10px;">
             <?php
             echo anchor('tasks/index/'.$task->id,'Back','class="btn btn-primary"');
+            /*
             echo '<pre>';
             print_r($task);
             echo '</pre>';
+            */
             ?>
         </div>
     </div>

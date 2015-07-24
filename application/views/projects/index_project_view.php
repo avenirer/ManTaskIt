@@ -45,7 +45,7 @@
                         echo '<td>'.$task->assignee->email.'</td>';
                         echo '<td>';
                         echo '<div class="progress">';
-                        echo '<div class="progress-bar" role="progressbar" aria-valuenow="'.$task->progress.'" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">';
+                        echo '<div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="'.$task->progress.'" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: '.$task->progress.'%;">';
                         echo $task->progress.'%';
                         echo '</div>';
                         echo '</div>';

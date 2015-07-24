@@ -10,6 +10,7 @@ class Tasks extends MY_Controller
         parent::__construct();
         $this->load->model('project_model');
         $this->load->model('task_model');
+        $this->load->model('task_history_model');
         $this->rules = $this->task_model->rules;
     }
 
@@ -28,14 +29,6 @@ class Tasks extends MY_Controller
         }
         else
         {
-            // get the task
-            /*$task = $this->task_model
-                ->with_status('fields:id,title')
-                ->with_creator('fields:email,id')
-                ->with_assignee('fields:email,id')
-                ->with_priority('fields:id,color,order')
-                ->get($task_id);*/
-
             $task = $this->task_model->get_task($task_id);
 
             if($task===FALSE)
@@ -47,6 +40,15 @@ class Tasks extends MY_Controller
             // get the project
             $project_id = $task->project_id;
             $project = $this->project_model->get($project_id);
+
+            //get the category
+            $this->load->model('category_model');
+            $category = $this->category_model->get($project->category_id);
+
+            $this->make_bread->add($category->title,site_url('categories/indes/'.$category->id), FALSE);
+            $this->make_bread->add($project->title,site_url('projects/index/'.$project->id),FALSE);
+
+
 
             if($project===FALSE)
             {
@@ -76,6 +78,19 @@ class Tasks extends MY_Controller
             // find out the members of the category
             $category_members = $this->category_user_model->where('category_id',$project->category_id)->with_user('fields:email,id')->get_all();
             $this->data['category_members'] = $category_members;
+
+
+            if(($task->assignee_id == $this->user_id) && ($task->status_id == '1'))
+            {
+                if($this->task_model->where('id',$task->id)->update(array('status'=>'2'))) {
+                    $this->load->model('task_history_model');
+                    $this->task_history_model->insert(array('task_id' => $task->id, 'status' => '2', 'changes' => 'The assignee <strong><span class="text-success">' . $task->assignee_email . '</span></strong> viewed the task.', 'created_at' => date('Y-m-d H:i:s'), 'created_by' => $this->user_id));
+                }
+
+            }
+            $this->load->model('task_history_model');
+            $task_history = $this->task_history_model->where('task_id',$task->id)->order_by('id','DESC')->fields('created_at,changes')->get_all();
+            $this->data['task_history'] = $task_history;
 
             $this->data['project_role'] = $project_role;
             $this->data['category_role'] = $category_role;
@@ -204,8 +219,8 @@ class Tasks extends MY_Controller
         $this->load->model('task_status_model');
         $statuses = $this->task_status_model->as_dropdown('title')->order_by('order', 'ASC')->get_all();
 
-        $admin_statuses = array('1','3','4','5','6','7');
-        $edit_statuses = array('3','4');
+        $admin_statuses = array('1','2','3','4','5','6','7');
+        $edit_statuses = array('2','3','4');
         $the_statuses = array();
 
         foreach($statuses as $id => $the_status)
@@ -245,12 +260,14 @@ class Tasks extends MY_Controller
 
             $update_data = array();
             $history_data = array();
+            $changes = array();
             if($role == 'admin')
             {
                 if(strcmp($old_task->title,$this->input->post('title'))!=0)
                 {
                     $update_data['title'] = $this->input->post('title');
                     $history_data['title'] = $old_task->title;
+                    $changes[] = '<strong>Title</strong> was changed from <span class="text-danger">'.$history_data['title'].'</span> to <span class="text-success">'.$update_data['title'].'</span>.';
                 }
 
 
@@ -258,30 +275,35 @@ class Tasks extends MY_Controller
                 {
                     $update_data['summary'] = $this->input->post('summary');
                     $history_data['summary'] = $old_task->summary;
+                    $changes[] = '<strong>Summary</strong> was changed from <span class="text-danger">'.$history_data['summary'].'</span> to <span class="text-success">'.$update_data['summary'].'</span>.';
                 }
 
                 if($old_task->assignee_id!=$this->input->post('assigned_to'))
                 {
                     $update_data['assigned_to'] = $this->input->post('assigned_to');
                     $history_data['assigned_to'] = $old_task->assignee_id;
+                    $changes[] = '<strong>The assignee</strong> was changed from <span class="text-danger">'.$members[$history_data['assigned_to']].'</span> to <span class="text-success">'.$members[$update_data['assigned_to']].'</span>.';
                 }
 
                 if(strcmp($old_task->description,$this->input->post('description'))!=0)
                 {
                     $update_data['description'] = $this->input->post('description');
                     $history_data['description'] = $old_task->description;
+                    $changes[] = '<strong>The description</strong> was changed from <span class="text-danger">'.$history_data['description'].'</span> to <span class="text-success">'.$update_data['description'].'</span>.';
                 }
 
                 if($old_task->priority!=$this->input->post('priority'))
                 {
                     $update_data['priority'] = $this->input->post('priority');
                     $history_data['priority'] = $old_task->priority;
+                    $changes[] = '<strong>The priority</strong> was changed from <span class="text-danger">'.$priorities[$history_data['priority']].'</span> to <span class="text-success">'.$priorities[$update_data['priority']].'</span>.';
                 }
 
                 if(strcmp($old_task->due_date,$this->input->post('due_date'))!=0)
                 {
                     $update_data['due_date'] = $this->input->post('due_date');
                     $history_data['due_date'] = $old_task->due_date;
+                    $changes[] = '<strong>The due date</strong> was changed from <span class="text-danger">'.$history_data['due_date'].'</span> to <span class="text-success">'.$update_data['due_date'].'</span>.';
                 }
             }
 
@@ -291,19 +313,31 @@ class Tasks extends MY_Controller
                 {
                     $update_data['notes'] = $this->input->post('notes');
                     $history_data['notes'] = $old_task->notes;
+                    $changes[] = '<strong>The notes</strong> were changed from <span class="text-danger">'.$history_data['notes'].'</span> to <span class="text-success">'.$update_data['notes'].'</span>.';
                 }
 
-                $status = $this->input->post('status');
+                if(($old_task->assignee_id!=$this->input->post('assigned_to')) && $role=='admin')
+                {
+                    $status = '1';
+                }
+
+                else
+                {
+                    $status = $this->input->post('status');
+                }
+
                 if(($old_task->status_id!=$status) && array_key_exists($status, $the_statuses[$role]))
                 {
                     $update_data['status'] = $status;
                     $history_data['status'] = $old_task->status_id;
+                    $changes[] = '<strong>Status</strong> was changed from <span class="text-danger">'.$statuses[$history_data['status']].'</span> to <span class="text-success">'.$statuses[$update_data['status']].'</span>.';
                 }
 
                 if($old_task->progress!=$this->input->post('progress'))
                 {
                     $update_data['progress'] = $this->input->post('progress');
                     $history_data['progress'] = $old_task->progress;
+                    $changes[] = '<strong>The progress</strong> of the task was changed from <span class="text-danger">'.$history_data['progress'].'%</span> to <span class="text-success">'.$update_data['progress'].'%</span>.';
                 }
             }
 
@@ -311,14 +345,36 @@ class Tasks extends MY_Controller
             {
                 $update_data['updated_by'] = $this->user_id;
                 $update_data['updated_at'] = date('Y-m-d H:i:s');
+                $the_intro = 'The following changes were made by <strong><span class="text-success">'.$members[$this->user_id].'</span></strong>:';
+                array_unshift($changes,$the_intro);
 
                 $history_data['task_id'] = $old_task->id;
                 $history_data['created_by'] = $this->user_id;
                 $history_data['created_at'] = date('Y-m-d H:i:s');
+                $history_data['changes'] = implode('<br />',$changes);
+
+
+                $history_id = $this->task_history_model->insert($history_data);
+                if( $history_id !== FALSE)
+                {
+                    if($this->task_model->where('id',$task_id)->update($update_data) !== FALSE)
+                    {
+                        $this->postal->add('The changes were made successfully.','success');
+                    }
+                    else
+                    {
+                        $this->task_history_model->delete($history_id);
+                        $this->postal->add('There was a problem in updating the task. Sit tight and wait for the rescue team... Or you could write them an email with a print screen.');
+                    }
+                }
+
+                redirect('tasks/index/'.$task_id);
             }
+            /*
             echo '<pre>';
             print_r($update_data);
             print_r($history_data);
+            print_r($changes);
             echo '</pre>';
             dd($old_task);
             /*
