@@ -59,16 +59,8 @@
             echo '</div>';
             echo '</div>';
             echo '<div class="form-group">';
-            echo form_error('description');
-            echo form_input('description',set_value('description'),'class="form-control" placeholder="Task description"');
-            echo '</div>';
-            echo '<div class="form-group">';
             echo form_error('summary');
             echo form_textarea('summary',set_value('summary'),'class="form-control" placeholder="Task summary"');
-            echo '</div>';
-            echo '<div class="form-group">';
-            echo form_error('notes');
-            echo form_textarea('notes',set_value('notes'),'class="form-control" placeholder="Task notes"');
             echo '</div>';
             echo form_error('project_id');
             echo form_hidden('project_id',$project->id);

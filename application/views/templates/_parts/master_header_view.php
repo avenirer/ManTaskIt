@@ -8,6 +8,7 @@
         <title><?php echo $page_title;?></title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script type="text/javascript" src="<?php echo site_url('assets/js/moment.js');?>"></script>
+        <script type="text/javascript" src="<?php echo site_url('/assets/js/jquery.knob.js');?>"></script>
         <link href="<?php echo site_url('assets/css/bootstrap.min.css');?>" rel="stylesheet">
         <link href="<?php echo site_url('assets/css/bootstrap-datetimepicker.min.css');?>" rel="stylesheet">
         <?php echo $before_head;?>

@@ -1,5 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');?>
 <div class="container">
+    <?php echo $this->make_bread->output();?>
 	<h1>Administer members on <?php echo $type.' "'.$type_content->title.'"';?>!</h1>
     <?php echo anchor(plural($type).'/index/'.$type_content->id,'Back','class="btn btn-primary"');?>
     <div class="row">

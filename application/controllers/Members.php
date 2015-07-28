@@ -65,15 +65,21 @@ class Members extends MY_Controller
                 $the_users[] = $user->user_id;
             }
         }
+
+        $available_users = array();
         if($type==='category')
         {
-            $available_users = $this->user_model->where('id',$the_users,NULL,TRUE,TRUE)->get_all();
+            $all_users = $this->user_model->fields('email,id')->get_all();
+            foreach($all_users as $user)
+            {
+                $available_users[$user->id] = array('id'=>$user->id,'email'=>$user->email);
+            }
+            $this->make_bread->add($type_content->title,site_url('categories/index/'.$type_content->id), FALSE);
         }
         elseif($type==='project')
         {
-            $available_users = array();
-            $category_users = $this->category_model->as_array()->where('id',$type_content->category_id)->with_users('fields:email,id')->get();
-            $available_users = $category_users['users'];
+            $category = $this->category_model->as_array()->where('id',$type_content->category_id)->with_users('fields:email,id')->get();
+            $available_users = $category['users'];
 
             foreach($available_users as $user_id => $user)
             {
@@ -82,8 +88,10 @@ class Members extends MY_Controller
                     unset($available_users[$user_id]);
                 }
             }
+            $this->make_bread->add($category['title'],site_url('categories/index/'.$category['id']), FALSE);
+            $this->make_bread->add($type_content->title,site_url('projects/index/'.$type_content->id),FALSE);
         }
-
+        $this->make_bread->add('Members');
         $this->data['available_users'] = $available_users;
         $this->data['type'] = $type;
         $this->data['users'] = $users;

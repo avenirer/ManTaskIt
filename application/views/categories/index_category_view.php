@@ -1,9 +1,9 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');?>
 <div class="container">
-    <h1>Category: <?php echo $category->title;?></h1>
+    <?php echo $this->make_bread->output();?>
+    <h1>Projects</h1>
 	<div class="row">
-        <div class="col-lg-6">
-            <h2>Projects</h2>
+        <div class="col-lg-12">
             <div class="row">
                 <div class="col-lg-12">
                     <?php
@@ -35,8 +35,8 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-lg-6">
-            <h2>Members</h2>
+        <div class="col-lg-12">
+            <h1>Members</h1>
             <div class="row">
                 <div class="col-lg-12">
                     <?php

@@ -23,9 +23,7 @@ class Task_model extends MY_Model
             'status' => array('field'=>'status','label'=>'Status','rules'=>'trim|is_natural_no_zero'),
             'due_date' => array('field'=>'due_date','label'=>'Due date','rules'=>'trim|datetime|required'),
             'priority' => array('field'=>'priority','label'=>'Priority','rules'=>'trim|is_natural_no_zero'),
-            'description' => array('field'=>'description','label'=>'Description','rules'=>'trim'),
             'summary' => array('field'=>'summary','label'=>'Summary','rules'=>'trim'),
-            'notes' => array('field'=>'notes','label'=>'Notes','rules'=>'trim'),
             'project_id' => array('field'=>'project_id','label'=>'Project ID','rules'=>'trim|is_natural_no_zero|required')
         ),
         'update' => array(

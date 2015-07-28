@@ -31,10 +31,12 @@ class Categories extends MY_Controller
                 redirect();
                 die();
             }
+            $category = $this->category_model->with_users('fields:email')->get($category_id);
+            $this->make_bread->add('Category: '.$category->title);
             $this->data['role'] = $role;
             $users = $this->category_user_model->fields('role')->where('category_id',$category_id)->with_user('fields:email,id')->get_all();
             $this->data['users'] = $users;
-            $this->data['category'] = $this->category_model->with_users('fields:email')->get($category_id);
+            $this->data['category'] = $category;
             $this->data['projects'] = $this->project_model->where('category_id',$category_id)->get_all();
             $this->render('categories/index_category_view');
         }

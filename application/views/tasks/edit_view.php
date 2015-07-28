@@ -34,16 +34,12 @@
             echo form_label('Status', 'status');
             echo form_error('status');
             if(in_array($role, array('admin','edit'))) {
-                echo form_dropdown('status', $statuses[$role], set_select('status', $task->status_id), 'class="form-control"');
+                echo form_dropdown('status', $statuses[$role], set_value('status', $task->status_id), 'class="form-control"');
             }
             else
             {
                 echo form_input('status',$statuses['admin'][$task->status_id],'class="form-control"'.$readonly);
             }
-            echo '</div>';
-            echo '<div class="form-group">';
-            echo form_error('notes');
-            echo form_textarea('notes',set_value('notes',$task->notes),'class="form-control" placeholder="Task notes"');
             echo '</div>';
             echo form_submit('submit','Edit task','class="btn btn-primary btn-block btn-lg"');
             echo anchor('projects/index/'.$task->id, 'Cancel','class="btn btn-default btn-block btn-lg" onclick="if (window.opener && window.opener.open && !window.opener.closed){window.close()};"');
@@ -92,11 +88,6 @@
             {
                 echo form_input('due_date',set_value('due_date',$task->due_date),'class="form-control"'.$readonly);
             }
-            echo '</div>';
-            echo '<div class="form-group">';
-            echo form_label('Description','description');
-            echo form_error('description');
-            echo form_input('description',set_value('description',$task->description),'class="form-control" placeholder="Task description"'.$readonly);
             echo '</div>';
             echo '<div class="form-group">';
             echo form_label('Summary','summary');

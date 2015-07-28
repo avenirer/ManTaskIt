@@ -34,6 +34,15 @@ class Projects extends MY_Controller
                 die();
             }
 
+            $category = $this->category_model->get($project->category_id);
+            $this->data['category'] = $category;
+            if($category===FALSE)
+            {
+                $this->postal->add('Project doesn\'t seem to belong to any category... This one is weird.','error');
+                redirect();
+                die();
+            }
+
             $this->load->model('project_user_model');
             $project_role = $this->project_user_model->get_role($project_id,$this->user_id);
             $category_role = $this->category_user_model->get_role($project->category_id,$this->user_id);
@@ -45,11 +54,20 @@ class Projects extends MY_Controller
                 exit();
             }
 
-            // Get the tasks
-            $this->load->model('task_model');
-            $tasks = $this->task_model->where('project_id',$project->id)->order_by('priority','asc')->with_status('fields:id,title')->with_creator('fields:email')->with_assignee('fields:email')->with_priority('fields:id,color,order')->get_all();
+            $this->make_bread->add('Category: '.$category->title,site_url('categories/index/'.$category->id), FALSE);
+            $this->make_bread->add('Project: '.$project->title);
 
-            $this->data['tasks'] = $tasks;
+            // Get the unfinished_tasks
+            $this->load->model('task_model');
+            $unfinished_tasks = $this->task_model->where(array('project_id'=>$project->id,'status !='=>'5'))->order_by('priority','asc')->with_status('fields:id,title')->with_creator('fields:email')->with_assignee('fields:email')->with_priority('fields:id,color,order')->get_all();
+
+            // Get the unfinished_tasks
+            $this->load->model('task_model');
+            $finished_tasks = $this->task_model->where(array('project_id'=>$project->id,'status'=>'5'))->limit(10)->order_by('id','desc')->with_status('fields:id,title')->with_creator('fields:email')->with_assignee('fields:email')->with_priority('fields:id,color,order')->get_all();
+
+
+            $this->data['unfinished_tasks'] = $unfinished_tasks;
+            $this->data['finished_tasks'] = $finished_tasks;
 
             $members = $this->project_user_model->with_user('fields:id,email')->where('project_id',$project->id)->get_all();
             $this->data['members'] = $members;
