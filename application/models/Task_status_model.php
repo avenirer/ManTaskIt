@@ -22,6 +22,7 @@ class Task_status_model extends MY_Model
             array('title'=>'Completed','order'=>5),
             array('title'=>'Incomplete','order'=>6),
             array('title'=>'Failed','order'=>7),
+            array('title'=>'Cancelled','order'=>8)
         );
         $this->insert($insert_data);
     }

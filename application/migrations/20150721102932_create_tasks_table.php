@@ -35,13 +35,7 @@ class Migration_Create_tasks_table extends CI_Migration
                 'null' => FALSE
             ),
             'summary' => array(
-                'type' => 'tinytext',
-            ),
-            'description' => array(
-                'type' => 'text'
-            ),
-            'notes' => array(
-                'type' => 'text'
+                'type' => 'text',
             ),
             'status' => array(
                 'type'=>'INT',

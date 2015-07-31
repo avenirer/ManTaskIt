@@ -59,11 +59,11 @@ class Projects extends MY_Controller
 
             // Get the unfinished_tasks
             $this->load->model('task_model');
-            $unfinished_tasks = $this->task_model->where(array('project_id'=>$project->id,'status !='=>'5'))->order_by('priority','asc')->with_status('fields:id,title')->with_creator('fields:email')->with_assignee('fields:email')->with_priority('fields:id,color,order')->get_all();
+            $unfinished_tasks = $this->task_model->where(array('project_id'=>$project->id,'status <'=>'5'))->order_by('priority','asc')->with_status('fields:id,title')->with_creator('fields:email')->with_assignee('fields:email')->with_priority('fields:id,color,order')->get_all();
 
-            // Get the unfinished_tasks
+            // Get the finished_tasks
             $this->load->model('task_model');
-            $finished_tasks = $this->task_model->where(array('project_id'=>$project->id,'status'=>'5'))->limit(10)->order_by('id','desc')->with_status('fields:id,title')->with_creator('fields:email')->with_assignee('fields:email')->with_priority('fields:id,color,order')->get_all();
+            $finished_tasks = $this->task_model->where(array('project_id'=>$project->id,'status >='=>'5'))->limit(10)->order_by('id','desc')->with_status('fields:id,title')->with_creator('fields:email')->with_assignee('fields:email')->with_priority('fields:id,color,order')->get_all();
 
 
             $this->data['unfinished_tasks'] = $unfinished_tasks;

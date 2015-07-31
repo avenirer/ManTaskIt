@@ -2,7 +2,6 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-9">
-            <?php echo $this->make_bread->output();?>
             <h1>Tasks to do</h1>
             <table class="table table-condensed">
                 <thead>
@@ -87,14 +86,16 @@
                 </tbody>
             </table>
         </div>
-
         <div class="col-lg-3">
             <div class="profile-sidebar">
                 <!-- SIDEBAR USERPIC -->
                 <div class="profile">
                     <div class="panel status panel-danger">
                         <div class="panel-heading">
-                            <h1 class="panel-title text-center"><?php echo sizeof($unfinished_tasks);?></h1>
+                            <h1 class="panel-title text-center">
+                                <?php
+                                echo ($unfinished_tasks) ? sizeof($unfinished_tasks) : '0';
+                                ?></h1>
                         </div>
                         <div class="panel-body text-center">
                             <strong>unfinished tasks</strong>
@@ -229,10 +230,6 @@
 
         </div>
 
-
-
-
-
-
     </div>
+    <?php echo $this->make_bread->output();?>
 </div>

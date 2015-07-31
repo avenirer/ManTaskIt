@@ -39,13 +39,57 @@ class Task_model extends MY_Model
         ),
     );
 
+    public function count_tasks_with_categories()
+    {
+        //$this->db->select('categories.id, categories.title');
+        $this->db->select('COUNT(*) as `number_tasks`', FALSE);
+        $this->db->select('categories.id as id');
+        $this->db->select('categories.title');
+        $this->db->where('tasks.status <', 5);
+        $this->db->join('projects','tasks.project_id = projects.id','left');
+        $this->db->join('categories','projects.category_id = categories.id','left');
+
+        $this->db->group_by('categories.id');
+        $query = $this->db->get('tasks');
+        if($query->num_rows()>0) {
+            return $query->result();
+        }
+        return FALSE;
+    }
+
+    public function get_summary_tasks($user_id, $limit = 10)
+    {
+        $this->db->select('tasks.*');
+        $this->db->group_start();
+        $this->db->where('tasks.assigned_to',$user_id);
+        $this->db->or_where('tasks.created_by',$user_id);
+        $this->db->group_end();
+        $this->db->where('tasks.status <','5');
+
+        $this->db->select('tasks_priorities.color as priority_color');
+        $this->db->select('tasks_statuses.title as status_title');
+        $this->db->select('users.email as assignee_email');
+
+        $this->db->join('tasks_priorities', 'tasks.priority = tasks_priorities.id','left');
+        $this->db->join('tasks_statuses','tasks.status = tasks_statuses.id');
+        $this->db->join('users','tasks.assigned_to = users.id', 'left');
+
+        $this->db->limit($limit);
+        $query = $this->db->get('tasks');
+        if($query->num_rows()>0)
+        {
+            return $query->result();
+        }
+        return FALSE;
+    }
+
     public function get_task($task_id)
     {
         if(!is_numeric( (int)$task_id))
         {
             return FALSE;
         }
-        $this->db->select('tasks.id,tasks.project_id,tasks.title,tasks.summary,tasks.description,tasks.notes,tasks.status as status_id,tasks.priority,tasks.progress,tasks.due_date');
+        $this->db->select('tasks.id,tasks.project_id,tasks.title,tasks.summary,tasks.status as status_id,tasks.priority,tasks.progress,tasks.due_date');
         $this->db->select('tasks_statuses.title as status_title');
         $this->db->select('tasks_priorities.color as priority_color');
         $this->db->select('tasks_priorities.title as priority_title');

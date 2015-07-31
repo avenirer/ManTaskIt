@@ -21,7 +21,7 @@ class MY_Controller extends CI_Controller
         }
         $current_user = $this->ion_auth->user()->row();
         $this->user_id = $current_user->id;
-        $this->data['current_user'] = $current_user;
+        //$this->data['current_user'] = $current_user;
         $this->data['current_user_menu'] = '';
         if($this->ion_auth->is_admin()) $this->data['current_user_menu'] = $this->load->view('templates/_parts/user_menu_admin_view',NULL, TRUE);
         $ips = $this->banned_model->get_all();
@@ -43,6 +43,7 @@ class MY_Controller extends CI_Controller
                 redirect('offline', 'refresh', 503);
             }
         }
+        unset($current_user);
 
 	}
 

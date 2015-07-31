@@ -192,12 +192,12 @@
 
 /* Profile container */
 .profile {
-    margin: 20px 0;
+    margin: 0;
 }
 
 /* Profile sidebar */
 .profile-sidebar {
-    padding: 20px 0 10px 0;
+    padding: 0 0 10px 0;
     background: #fff;
 }
 

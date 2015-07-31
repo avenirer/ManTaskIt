@@ -111,7 +111,7 @@ class Tasks extends MY_Controller
             $this->load->model('task_status_model');
             $statuses = $this->task_status_model->as_dropdown('title')->order_by('order', 'ASC')->get_all();
 
-            $admin_statuses = array('1','2','3','4','5','6','7');
+            $admin_statuses = array('1','2','3','4','5','6','7','8');
             $edit_statuses = array('2','3','4');
             $the_statuses = array();
 

@@ -2,7 +2,6 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-9">
-            <?php echo $this->make_bread->output();?>
             <h1>Task: <?php echo $task->title;?></h1>
             <div class="well"><?php echo $task->summary;?></div>
 
@@ -29,6 +28,25 @@
             ?>
         </div>
         <div class="col-lg-3">
+            <div class="profile-title">
+                <div class="profile-category">
+                    <?php echo anchor(site_url('categories/index/'.$category->id), 'Category: '.$category->title);?>
+                </div>
+                <div class="profile-project">
+                    <?php echo anchor(site_url('projects/index/'.$project->id), 'Project: '.$project->title);?>
+                </div>
+            </div>
+            <!-- END SIDEBAR USER TITLE -->
+            <!-- SIDEBAR BUTTONS -->
+            <div class="profile-userbuttons">
+                <?php
+                if(in_array($project_role, array('admin','edit')) || in_array($category_role,array('admin','edit')))
+                {
+                    echo anchor('tasks/add/' . $project->id, 'Add task', 'class="btn btn-success btn-sm"');
+                }
+                ?>
+                <!--<button type="button" class="btn btn-danger btn-sm">Message</button>-->
+            </div>
             <?php
             $readonly = '';
             if($role!=='admin')
@@ -46,28 +64,6 @@
 
             ?>
 
-                </div>
-                <!-- END SIDEBAR USERPIC -->
-                <!-- SIDEBAR USER TITLE -->
-                <div class="profile-title">
-                    <div class="profile-category">
-                        <?php echo anchor(site_url('categories/index/'.$category->id), 'Category: '.$category->title);?>
-                    </div>
-                    <div class="profile-project">
-                        <?php echo anchor(site_url('projects/index/'.$project->id), 'Project: '.$project->title);?>
-                    </div>
-                </div>
-                <!-- END SIDEBAR USER TITLE -->
-                <!-- SIDEBAR BUTTONS -->
-                <div class="profile-userbuttons">
-                    <?php
-                    if(in_array($project_role, array('admin','edit')) || in_array($category_role,array('admin','edit')))
-                    {
-                        echo anchor('tasks/add/' . $project->id, 'Add task', 'class="btn btn-success btn-sm"');
-                    }
-                    ?>
-                    <!--<button type="button" class="btn btn-danger btn-sm">Message</button>-->
-                </div>
 
                 <?php
 
@@ -247,6 +243,7 @@
             </div>
 
         </div>
-    </div>
 
+    </div>
+<?php echo $this->make_bread->output();?>
 </div>
